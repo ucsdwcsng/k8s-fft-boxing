@@ -1,0 +1,61 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fft-boxing.day2.
+spec: 
+  template:
+    spec:
+      initContainers:
+      - image: wbitt/network-multitool:latest
+        name: setup-netintf-mac
+        imagePullPolicy: Always
+        command: ["ifconfig"]
+        args: ["eth0", "hw", "ether", "$(MAC_ADDRESS)"]
+        env:
+        - name: MAC_ADDRESS
+          value: "02:42:ac:11:00:03"
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+      containers:
+      - image: wcsng-36.ucsd.edu:5000/matlab:u20.04_m2022a_july29
+        name: matlab
+        imagePullPolicy: IfNotPresent
+        command: ["sleep"]
+        args: ["infinity"]
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 12Gi
+            nvidia.com/gpu: 1
+          requests:
+            cpu: 2000m
+            memory: 8Gi
+            nvidia.com/gpu: 1
+        volumeMounts:
+          - mountPath: /home/scisrs/fft_boxing/data
+            name: scisrs-storage
+      affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: nvidia.com/gpu.product
+              operator: In
+              values:
+              - NVIDIA-GeForce-GTX-1080-Ti
+      tolerations:
+      - key: nautilus.io/large-gpu
+        operator: "Exists"
+      - key: nautilus.io/ceph
+        operator: "Exists"
+      - key: nautilus.io/stashcache
+        operator: "Exists"
+      - key: nautilus.io/haosu
+        operator: "Exists"
+      
+
+      volumes:
+      - name: scisrs-storage
+        persistentVolumeClaim:
+          claimName: storage
