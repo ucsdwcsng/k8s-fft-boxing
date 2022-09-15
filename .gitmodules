@@ -1,0 +1,3 @@
+[submodule "searchlight"]
+	path = searchlight
+	url = git@github.com:ucsdwcsng/searchlight.git
