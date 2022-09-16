@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: fft-boxing.day2.
+  name: fft-boxing.day2.fft-archive-18-14-03
 spec: 
   template:
     spec:
@@ -18,14 +18,19 @@ spec:
           capabilities:
             add: ["NET_ADMIN"]
       containers:
-      - image: wcsng-36.ucsd.edu:5000/matlab:u20.04_m2022a_july29
+      - image: wcsng-36.ucsd.edu/fft_boxing:v0.1.1
         name: matlab
         imagePullPolicy: IfNotPresent
-        command: ["sleep"]
-        args: ["infinity"]
+        command: ["matlab"]
+        args: ["-batch", "fft_boxing"]
+        env:
+        - name: BASEPATH
+          value: "/storage/iarpa_datacollect/lts/Day2/4_sweep/fft-archive-18-14-03"
+        - name: TIME_SLICE
+          value: 0.1
         resources:
           limits:
-            cpu: 2000m
+            cpu: 4000m
             memory: 12Gi
             nvidia.com/gpu: 1
           requests:
@@ -33,17 +38,32 @@ spec:
             memory: 8Gi
             nvidia.com/gpu: 1
         volumeMounts:
-          - mountPath: /home/scisrs/fft_boxing/data
+          - mountPath: /storage
             name: scisrs-storage
       affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: nvidia.com/gpu.product
-              operator: In
-              values:
-              - NVIDIA-GeForce-GTX-1080-Ti
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: nvidia.com/gpu.product
+                operator: In
+                values:
+                - NVIDIA-GeForce-GTX-1070
+                - NVIDIA-GeForce-GTX-1080
+                - NVIDIA-GeForce-GTX-1080-Ti
+                - NVIDIA-A100-PCIE-40GB-MIG-2g.10gb
+                - Tesla-T4
+                - Tesla-V100-SXM2-32GB
+                - NVIDIA-GeForce-RTX-3090
+                - NVIDIA-GeForce-RTX-2080-Ti
+                - NVIDIA-TITAN-Xp
+                - NVIDIA-TITAN-RTX
+                - NVIDIA-RTX-A5000
+                - NVIDIA-RTX-A6000
+                - Quadro-M4000
+                - Quadro-RTX-8000
+                - NVIDIA-A40
+
       tolerations:
       - key: nautilus.io/large-gpu
         operator: "Exists"
@@ -54,7 +74,6 @@ spec:
       - key: nautilus.io/haosu
         operator: "Exists"
       
-
       volumes:
       - name: scisrs-storage
         persistentVolumeClaim:

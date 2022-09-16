@@ -1,0 +1,31 @@
+version: "3.9"
+services:
+  fft_boxing:
+    build:
+      context: .
+      dockerfile: Dockerfile 
+    image: wcsng-36.ucsd.edu/fft_boxing:${FFT_BOXING_VERSION}
+    container_name: fft_boxing
+    shm_size: '12248mb'
+    mac_address: 02:42:ac:11:00:03 # license file generated for this mac
+    networks:
+      - nw
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    # volumes:
+      # - /storage.iarpa_datacollect/lts/Day2:/home/scisrs/fft_boxing/data:rw
+    working_dir: /home/scisrs/fft_boxing/
+    environment:
+      - BASEPATH="/storage/iarpa_datacollect/lts/Day2/4_sweep/fft-archive-18-14-03"
+      - TIME_SLICE=0.1
+    # command:  tail -f /dev/null
+
+networks:
+  nw:
+    driver: bridge
+    # external: true    
