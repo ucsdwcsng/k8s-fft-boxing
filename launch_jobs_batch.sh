@@ -4,17 +4,20 @@ echo 'Launching Jobs'
 echo '---------------------------------------------------------------------------------------------'
 
 print_help(){
-    echo -e "Usage: ./$0 [-p <jobname_prefix>] <jobs_file>"
-    echo -e "\t\t jobname_prefix: \tValue prepended to jon_name (Default: '')"
+    echo -e "Usage: ./$0 [-p <jobname_prefix>] [-d] <jobs_file>"
+    echo -e "\t\t -p \t jobname_prefix: \tValue prepended to jon_name (Default: '')"
+    echo -e "\t\t -d \t dryrun: \tRun Helm in dryrun mode"
     echo
 }
 
 jobname_prefix=""
-while getopts p:h flag
+dryrun=""
+while getopts p:hd flag
 do
     case "${flag}" in
         p) jobname_prefix="${OPTARG}."
             shift;;
+        d) dryrun="--dry-run";;
         *)
             print_help;
             exit -1;
@@ -44,10 +47,10 @@ do
     echo "Job: $job_major/$job_minor"
     echo "job_name: $job_name"
 
-    # helm install $job_name chart/fft_boxing/ \
-    #     --set jobParam.name="$job_name" \
-    #     --set jobParam.dataDir="$d"    \
-    #     --set jobParam.description="dir: $d"    
+    helm install $job_name chart/fft_boxing/ $dryrun \
+        --set jobParam.name="$job_name" \
+        --set jobParam.dataDir="$d"    \
+        --set jobParam.description="dir: $d"   
 
 
     ((jobid=jobid+1))
