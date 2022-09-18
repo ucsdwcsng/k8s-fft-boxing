@@ -42,11 +42,13 @@ for i=1:length(survey)
     
     total_samples = datafile.bytes/4;
     
-    for radio_i=1:num_radios
+    for radio_i=0:num_radios-1
         filename=sprintf("fft-archive-%d-%d-0000", radio_i,channel);
         fp = archive_path+'/'+filename+'.sigmf-data';
         fid = fopen(fp);
         
+        disp("Running file: " + string(filename))
+
         count = ceil(time_slice*fs/nfft)*nfft;
         
         nChunk=ceil(total_samples/count);
@@ -65,15 +67,18 @@ for i=1:length(survey)
             dataChan.isAlreadyPower = true;
             c = ConvContextualize(dataChan);
             c.process;
-            c.plotFinalBoxes;
+            % c.plotFinalBoxes;
             boxingResults{iChunk} = BoxingResults(dataChan, ...
                 c.centerArray_Hz - c.widthArray_Hz/2, ...
                 c.centerArray_Hz + c.widthArray_Hz/2, ...
                 c.centerArray_s - c.heightArray_s/2, ...
                 c.centerArray_s + c.heightArray_s/2, ...
                 c.aboveNoiseFloorRaw_dB, ...
-                c.aboveNoiseFloorProcessed_dB);
+                c.aboveNoiseFloorProcessed_dB);         
+
+            boxingResults{iChunk}.channelizerData=[];
+            java.lang.Runtime.getRuntime().gc;
         end
-        save(boxdir+'/'+filename+'.mat','boxingResults');
+        save(boxdir+'/'+filename+'.mat','boxingResults','-v7.3');
     end
 end
