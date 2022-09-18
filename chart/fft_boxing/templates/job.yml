@@ -1,7 +1,9 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: fft-boxing.day4.survey
+  name: fft-boxing.{{ required "Missing a required value jobParameters.name" .Values.jobParameters.name | lower }}
+  labels:
+    {{- include "fft_boxing.labels" . | nindent 4 }}
 spec: 
   template:
     spec:
@@ -13,33 +15,27 @@ spec:
         args: ["eth0", "hw", "ether", "$(MAC_ADDRESS)"]
         env:
         - name: MAC_ADDRESS
-          value: "02:42:ac:11:00:03"
+          value: {{ .Values.matlabLicenseMAC | quote }}
         securityContext:
           capabilities:
             add: ["NET_ADMIN"]
       containers:
-      - image: wcsng-36.ucsd.edu/fft_boxing:v0.1.5
+      - image: {{ .Values.image.registry }}/fft_boxing:v{{ .Chart.AppVersion }}
         name: matlab
         imagePullPolicy: IfNotPresent
         command: ["matlab"]
         args: ["-batch", "fft_boxing"]
         env:
         - name: BASEPATH
-          value: "/storage/iarpa_datacollect/lts/Day4/survey"
+          value: /storage/{{ required "Missing a required parameter jobParameters.dataDir" .Values.jobParameters.dataDir }}
         - name: TIME_SLICE
-          value: "0.1"
+          value: {{ .Values.jobParameters.timeSlice | quote }}
         resources:
-          limits:
-            cpu: 5000m
-            memory: 8Gi
-            nvidia.com/gpu: 1
-          requests:
-            cpu: 3000m
-            memory: 6Gi
-            nvidia.com/gpu: 1
+          {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:
           - mountPath: /storage
             name: scisrs-storage
+      {{- if .Values.requiredGPU }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -48,24 +44,11 @@ spec:
               - key: nvidia.com/gpu.product
                 operator: In
                 values:
-                - NVIDIA-GeForce-GTX-1070
-                - NVIDIA-GeForce-GTX-1080
-                - NVIDIA-GeForce-GTX-1080-Ti
-                - NVIDIA-A100-PCIE-40GB-MIG-2g.10gb
-                - Tesla-T4
-                - Tesla-V100-SXM2-32GB
-                - NVIDIA-GeForce-RTX-3090
-                - NVIDIA-GeForce-RTX-2080-Ti
-                - NVIDIA-TITAN-Xp
-                - NVIDIA-TITAN-RTX
-                - NVIDIA-RTX-A5000
-                - NVIDIA-RTX-A6000
-                - Quadro-M4000
-                - Quadro-RTX-8000
-                - NVIDIA-A40
-      restartPolicy: OnFailure
+                  {{- toYaml .Values.requiredGPU | nindent 16 }}
+      {{- end}}
+      restartPolicy: {{ .Values.jobParameters.restartPolicy }}
 
       volumes:
       - name: scisrs-storage
         persistentVolumeClaim:
-          claimName: storage
+          claimName: {{ .Values.dataVolumeName }}
