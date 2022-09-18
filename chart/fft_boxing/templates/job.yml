@@ -2,6 +2,10 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: fft-boxing.{{ required "Missing a required value jobParameters.name" .Values.jobParameters.name | lower }}
+  {{- if .Values.jobParameters.description }}
+  annotation:
+    jobDescription: {{ .Values.jobParameters.description | quote }}
+  {{- end }}
   labels:
     {{- include "fft_boxing.labels" . | nindent 4 }}
 spec: 

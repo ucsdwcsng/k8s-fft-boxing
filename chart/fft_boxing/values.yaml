@@ -5,6 +5,7 @@
 jobParameters:
   name: ""
   dataDir: ""
+  description: ""
   timeSlice: 0.1
   restartPolicy: OnFailure
 
