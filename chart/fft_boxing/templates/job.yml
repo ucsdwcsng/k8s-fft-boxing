@@ -1,10 +1,10 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: fft-boxing.{{ required "Missing a required value jobParameters.name" .Values.jobParameters.name | lower }}
-  {{- if .Values.jobParameters.description }}
-  annotation:
-    jobDescription: {{ .Values.jobParameters.description | quote }}
+  name: fft-boxing.{{ required "Missing a required value jobParam.name" .Values.jobParam.name | lower }}
+  {{- if .Values.jobParam.description }}
+  annotations:
+    jobDescription: {{ .Values.jobParam.description | quote }}
   {{- end }}
   labels:
     {{- include "fft_boxing.labels" . | nindent 4 }}
@@ -31,9 +31,9 @@ spec:
         args: ["-batch", "fft_boxing"]
         env:
         - name: BASEPATH
-          value: /storage/{{ required "Missing a required parameter jobParameters.dataDir" .Values.jobParameters.dataDir }}
+          value: /storage/{{ required "Missing a required parameter jobParam.dataDir" .Values.jobParam.dataDir }}
         - name: TIME_SLICE
-          value: {{ .Values.jobParameters.timeSlice | quote }}
+          value: {{ .Values.jobParam.timeSlice | quote }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:
@@ -50,7 +50,7 @@ spec:
                 values:
                   {{- toYaml .Values.requiredGPU | nindent 16 }}
       {{- end}}
-      restartPolicy: {{ .Values.jobParameters.restartPolicy }}
+      restartPolicy: {{ .Values.jobParam.restartPolicy }}
 
       volumes:
       - name: scisrs-storage

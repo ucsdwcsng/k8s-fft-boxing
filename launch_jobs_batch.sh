@@ -12,19 +12,21 @@ print_help(){
 
 jobname_prefix=""
 dryrun=""
+nshift=0;
 while getopts p:hd flag
 do
     case "${flag}" in
         p) jobname_prefix="${OPTARG}."
-            shift;;
+            ((nshift=nshift+1));;
         d) dryrun="--dry-run";;
         *)
             print_help;
             exit -1;
         ;;
     esac
-    shift;
+    ((nshift=nshift+1));
 done
+shift $nshift
 
 if [[ $# -ne 1 ]]
 then
@@ -35,14 +37,15 @@ fi
 jobs_file="$1"
 
 echo "jobs_file: $jobs_file"
+echo "dryrun: $dryrun"
 echo 
 
 jobid=0;
 for d in $(cat $jobs_file)
 do
-    job_major=$(echo $d | sed -e 's/.*\/(.*?)\/(.*)$/\1/')
-    job_minor=$(echo $d | sed -e 's/.*\/(.+?)\/(.+)$/\2/')
-    job_name="$job_major.$jobid"
+    job_major=$(echo $d | sed -E 's/.*\/(.*?)\/(.*)$/\1/')
+    job_minor=$(echo $d | sed -E 's/.*\/(.+?)\/(.+)$/\2/')
+    job_name="${jobname_prefix}$job_major.$jobid"
 
     echo "Job: $job_major/$job_minor"
     echo "job_name: $job_name"

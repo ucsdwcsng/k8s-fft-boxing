@@ -3,7 +3,7 @@ addpath('searchlight/')
 startup;
 
 basepath = getenv('BASEPATH');
-time_slice=getenv('TIME_SLICE'); % sec
+time_slice=str2double(getenv('TIME_SLICE')); % sec
 
 % basepath = '/tmp/soi-sc16-lo-scaled';
 % time_slice=0.1; % sec

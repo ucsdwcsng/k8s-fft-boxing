@@ -9,7 +9,7 @@ RUN mkdir ${USERDIR}/fft_boxing
 
 COPY --chown=${USER} searchlight ${USERDIR}/fft_boxing/searchlight
 
-COPY --chown=${USER} . ${USERDIR}/fft_boxing
+COPY --chown=${USER} fft_boxing.m ${USERDIR}/fft_boxing
 
 USER ${USER}
 WORKDIR ${USERDIR}/fft_boxing
