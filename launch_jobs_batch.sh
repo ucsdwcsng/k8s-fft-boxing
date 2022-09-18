@@ -4,7 +4,7 @@ echo 'Launching Jobs'
 echo '---------------------------------------------------------------------------------------------'
 
 print_help(){
-    echo -e "Usage: ./launch_jobs.sh [-p <jobname_prefix>] <jobs_file>"
+    echo -e "Usage: ./$0 [-p <jobname_prefix>] <jobs_file>"
     echo -e "\t\t jobname_prefix: \tValue prepended to jon_name (Default: '')"
     echo
 }
