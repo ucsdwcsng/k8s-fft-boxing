@@ -18,12 +18,12 @@ image:
 
 resources:
   limits:
-    cpu: 5000m
-    memory: 8Gi
+    cpu: 4000m
+    memory: 4Gi
     nvidia.com/gpu: 1
   requests:
-    cpu: 3000m
-    memory: 6Gi
+    cpu: 1500m
+    memory: 2Gi
     nvidia.com/gpu: 1
 
 requiredGPU: []
