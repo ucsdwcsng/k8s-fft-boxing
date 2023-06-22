@@ -1,3 +1,7 @@
 [submodule "searchlight"]
 	path = searchlight
 	url = git@github.com:ucsdwcsng/searchlight.git
+[submodule "DummyNomad"]
+	path = DummyNomad
+	url = git@github.com:ucsdwcsng/Nomad.git
+	branch = dummy_nomad
