@@ -1,0 +1,3 @@
+iarpa_datacollect/lts/Day4/soi-tr6/fft-archive-14-59-07/soi-LTE_DL_10MHzPowerstepped_2s_LTE_UL_10MHz_Powerstepped_1_scaled-centerfreq-000650000000-gain-50-antenna-RX2
+iarpa_datacollect/lts/Day4/soi-tr6/fft-archive-14-59-07/soi-GSM_DL_Powerstepped_2s_GSM_Powerstepped_1_scaled-centerfreq-000650000000-gain-50-antenna-RX2
+iarpa_datacollect/lts/Day4/soi-tr6/fft-archive-14-59-07/soi-dsss_20dB_650_scaled-centerfreq-000650000000-gain-50-antenna-RX2

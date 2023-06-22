@@ -8,8 +8,11 @@ services:
     container_name: fft_boxing
     shm_size: '12248mb'
     mac_address: 02:42:ac:11:00:03 # license file generated for this mac
+    ipc: "host"
     networks:
       - nw
+      - dns-proxy_nw
+      - nomad_scisrs_nw
     deploy:
       resources:
         reservations:
@@ -17,15 +20,22 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
-    # volumes:
-      # - /storage.iarpa_datacollect/lts/Day2:/home/scisrs/fft_boxing/data:rw
+    volumes:
+      - /home/skadaveru/Projects/scisrs/datacollect/ucsd_datacollect/data:/home/scisrs/fft_boxing/data:rw
+    privileged: true
+    user: 1006:1006
     working_dir: /home/scisrs/fft_boxing/
     environment:
-      - BASEPATH="/storage/iarpa_datacollect/lts/Day2/4_sweep/fft-archive-18-14-03"
+      - BASEPATH=/home/scisrs/fft_boxing/data
       - TIME_SLICE=0.1
-    # command:  tail -f /dev/null
+    command:  tail -f /dev/null
 
 networks:
   nw:
     driver: bridge
+  dns-proxy_nw:
+    external: true
+  nomad_scisrs_nw:
+    external: true
+
     # external: true    
